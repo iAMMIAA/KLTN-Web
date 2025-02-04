@@ -1,0 +1,108 @@
+.hello_theme{
+    height: 15%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    padding: 3% 10%;
+    font-weight: bold;
+    font-size: 20px;
+    margin-top: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #37537B;
+    
+    .btn-question{
+        padding: 10px;
+        border-radius: 15px;
+        width: 90%;
+        height: 30%;
+        text-align: left;
+        border: 1px solid white;
+        height: 40px;
+        font-size: 15px;
+        color: rgb(105, 105, 105);
+    }
+}
+.hello_theme.dark_mode{
+    color: #ccc;
+    background-color: #333333;
+}
+
+.exchange_title{
+    height: 5%;
+    margin-top: 25px;
+}
+.exchange_title.dark_mode{
+    color: #ffffff;
+}
+.newfeed{
+    overflow-y: auto;
+    max-height: 80%;
+    height: 80%;
+}
+.newfeed.dark_mode{
+    color: #ccc;
+}
+.post{
+    background-color: white;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    margin-top: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.post.dark_mode{
+    background-color: #333333;
+}
+.post-content{
+    padding: 10px;
+    padding-bottom: 2px;
+}
+.post-description{
+    margin: 10px 5px;
+}
+.post-summary{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    font-size: 13px;
+}
+.post-user{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+}
+.post-user-avatar{
+    height: 50px;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.img{
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+}
+.post-user-info{
+    .post-user-name{
+        font-weight: bold;
+    }
+
+    .post-user-time{
+        font-size: 12px;
+    }
+}
+.post-action{
+    padding: 10px;
+    border-top: 1.5px solid rgba(181, 177, 177, 50%);
+    display: flex;
+    gap:10px;
+
+}
+.icon{
+    height: 20px;
+    width:  20px;
+}

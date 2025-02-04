@@ -1,0 +1,54 @@
+.main_two{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 30.07%;
+    width: 100%;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    box-shadow: 0 0 20px #dcdbdb70;
+}
+.two_theme{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 60%;
+    overflow: hidden; 
+    white-space: normal; 
+}
+.two_header{
+    height: 60%;
+    width: 80%;
+}
+.two_hi_user{
+    color: #37537B;
+    font-size: 38px;
+    font-weight: bolder;
+} 
+.two_quote{
+    font-size: 20px;
+    margin: 0px;
+}
+
+.two_author{
+    font-size: 20px;
+    color: rgb(108, 107, 107);
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 50px;
+}
+.two_img{
+    height: 100%;
+    width: 40%;
+    /* background-color: #6f9cd2; */
+}
+.two_img img{
+    height: 100%;
+    width: 100%;
+    /* border-radius: 20px; */
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}

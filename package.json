@@ -1,0 +1,20 @@
+{
+  "name": "nt208.o22.antt-laptrinhweb",
+  "version": "1.0.0",
+  "description": "1. Lê Phương Thảo - 21522608\r     2. Trần Thị Thanh Trúc - 21522722\r     3. Nguyễn Thị Yến Ly \r     4. Trịnh Vinh Đại\r     5. Trương Đức Minh Quang",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "react-scroll": "^1.9.0"
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@fortawesome/free-regular-svg-icons": "^6.5.2",
+    "@mui/material": "^5.15.16",
+    "@mui/utils": "^5.15.14"
+  }
+}

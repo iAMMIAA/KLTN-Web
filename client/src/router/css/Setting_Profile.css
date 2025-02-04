@@ -1,0 +1,133 @@
+.setting_profile{
+    height: 100vh;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Josefin Sans', sans-serif;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.left_setting_profile{
+    width: 28%;
+    background-color: #ffffff;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30px;
+}
+.left_setting_profile.dark_mode{
+    background-color: #333333;
+}
+.right_setting_profile{
+    width: 71%;
+    background-color: #ffffff;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+.right_setting_profile.dark_mode{
+    background-color: #333333;
+}
+.render_profile{
+    height: 50px;
+    width: 65%;
+    border-radius: 20px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    color: rgb(8, 8, 8);
+    margin: 5px;
+    text-decoration: none;
+    /* z-index: 1; */
+}
+.render_profile.dark_mode{
+    color: white;
+}
+.render_profile.open{
+    height: 50px;
+    width: 65%;
+    background-color: #82b5dc;
+    border-radius: 20px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    color: white;
+    margin: 5px;
+    text-decoration: none;
+}
+.render_setting{
+    height: 50px;
+    width: 65%;
+    border-radius: 20px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    color: rgb(8, 8, 8);
+    margin: 5px;
+    text-decoration: none;
+    /* z-index: 1; */
+}
+.render_setting.dark_mode{
+    color: #ffffff;
+}
+.render_setting.open{
+    height: 50px;
+    width: 65%;
+    background-color: #82b5dc;
+    border-radius: 20px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    color: white;
+    margin: 5px;
+    text-decoration: none;
+}
+
+@media (max-width: 480px) {
+    .setting_profile{
+        display: flex;
+        flex-direction: column; 
+    }
+    .left_setting_profile{
+        width: 100%;
+        height: 10%;
+        border-radius: 25px;
+        display: flex;
+        flex-direction: row;
+        padding-top: 0px;
+
+    }
+    .right_setting_profile{
+        width: 100%;
+        height: 88%;
+        border-radius: 25px;
+        display: flex;
+        flex-direction: row;
+        padding-top: 0px;
+    }
+}
+@media (min-width: 480px) and (max-width: 768px) {
+    .setting_profile{
+        display: flex;
+        flex-direction: column; 
+    }
+    .left_setting_profile{
+        width: 100%;
+        height: 10%;
+        border-radius: 25px;
+        display: flex;
+        flex-direction: row;
+        padding-top: 0px;
+
+    }
+    .right_setting_profile{
+        width: 100%;
+        height: 88%;
+        border-radius: 25px;
+        display: flex;
+        flex-direction: row;
+        padding-top: 0px;
+    }
+}

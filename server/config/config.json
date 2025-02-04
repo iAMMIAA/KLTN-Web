@@ -1,0 +1,9 @@
+{
+    "development": {
+      "username": "nhom5",
+      "password": "GROUP5.4321",
+      "database": "medical_blog",
+      "host": "medicaldb.mysql.database.azure.com",
+      "dialect": "mysql"
+    }
+}

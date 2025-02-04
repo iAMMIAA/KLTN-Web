@@ -1,0 +1,125 @@
+.see_notification{
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(89, 89, 89, 0.359);
+    z-index: 9999; /* Đặt z-index cao để phần tử này nằm trên cùng */
+}
+.form_status{
+    height: 80%;
+    width: 50%;
+    background-color: white;
+    border-radius: 25px;
+    padding: 15px;
+}
+.form_status.dark_mode{
+    color: #ebe9e9;
+    background-color: #333333;
+}
+.content_status{
+    height: 40%;
+    width: 100%;
+    border-radius: 25px;
+    background-color: rgba(189, 187, 187, 0.782);
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    overflow: auto;
+}
+.content_status.dark_mode{
+    background-color: rgba(106, 106, 106, 0.782);
+}
+.container_status{
+    margin-left: 7px;
+}
+.content{
+    justify-content: center;
+}
+.comment_status{
+    height: 60%;
+    overflow-y: auto;
+}
+.item_comment{
+    width: 98%;
+    margin: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    /* background-color: aqua; */
+}
+.item_comment.gray{
+    background-color: rgba(198, 196, 196, 0.249);
+}
+.item_comment.gray.dark_mode{
+    background-color: rgba(232, 229, 229, 0.249);
+}
+.container_comment{
+    margin-left: 10px;
+}
+.nameUserComment{
+    font-weight: large;
+    font-size: 10sp;
+}
+@media (max-width: 480px) {
+    .form_status{
+        height: 60%;
+        width: 80%;
+    }
+    .content_status{
+        height: 50%;
+        overflow: auto;
+    }
+    .comment_status{
+        height: 50%;
+    }
+    .container_status{
+        font-size: 14px;
+    }
+    .item_comment{
+        height: 30%;
+    }
+    .container_comment{
+        font-size: 14px;
+    }
+}
+@media (min-width: 480px) and (max-width: 768px) {
+    .form_status{
+        height: 60%;
+        width: 80%;
+    }
+    .content_status{
+        height: 50%;
+        overflow: auto;
+    }
+    .comment_status{
+        height: 50%;
+    }
+    .container_status{
+        font-size: 15px;
+    }
+    .item_comment{
+        height: 30%;
+    }
+    .container_comment{
+        font-size: 15px;
+    }
+}
+@media (min-width: 768px) and (max-width: 930px){
+    .form_status{
+        height: 70%;
+        width: 70%;
+    }
+    .content_status{
+        height: 50%;
+        overflow: auto;
+    }
+    .comment_status{
+        height: 50%;
+    }
+    .item_comment{
+        height: 30%;
+    }
+}
