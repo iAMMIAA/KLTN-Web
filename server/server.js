@@ -11,6 +11,7 @@ const { ValidationError, fn } = require("sequelize");
 const { ExchangeLike } = require('./src/models/like.model');
 const { checkAccess } = require("./src/middleware/auth.middleware");
 const { User } = require('./src/models/user.model');
+const { createClient } = require('@clickhouse/client');
 
 const app = express();
 const port = 3001;
@@ -27,20 +28,60 @@ const connection = mysql.createConnection({
     password: 'i.AMMIAK16',
     database: 'DrugWeb'
 });
-// const connection = mysql.createConnection({
-//     host: 'medicaldb.mysql.database.azure.com',
-//     user: 'nhom5',
-//     password: 'GROUP5.4321',
-//     database: 'medical_blog'
-// });
 
-// const connection = mysql.createConnection({
-//     host: process.env.BD_HOST,
-//     user: process.env.DB_USERNAME,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.BD_DATABASE
-// });
+const db_clickhouse = new createClient({
+    url: 'https://paf1p0lrtd.eastus2.azure.clickhouse.cloud:8443',
+    username: 'default',
+    password: 'MKKnDIrUP.dh3'
+})
 
+// Kiểm tra kết nối
+async function testConnection() {
+    try {
+        const result = await db_clickhouse.ping();
+        console.log('Kết nối ClickHouse thành công:', result);
+    } catch (error) {
+        console.error('Lỗi kết nối ClickHouse:', error);
+    }
+}
+  
+testConnection();
+
+app.get('/clickhouse/:nameDrug', async (req, res) => {
+    const nameDrug = req.params.nameDrug;
+    const query = `SELECT * FROM drug_database WHERE name = {nameDrug:String}`;
+    try {
+        const result = await db_clickhouse.query({
+            query: query,
+            format: 'JSONEachRow',
+            query_params: {nameDrug}
+        });
+        const rows = await result.json();
+        console.log('result:', rows);      
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error('Error querying ClickHouse:', error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+app.post('/write-info-drug', async (req, res) =>{
+    const { id_drug, uses, excipients, side_effects, name } = req.body;
+
+    try {
+        await db_clickhouse.insert({
+            table: 'drug_database',
+            values: [{ id_drug, uses, excipients, side_effects, name }],
+            format: 'JSONEachRow' // ClickHouse yêu cầu định dạng JSON khi insert
+        });
+
+        console.log('Data inserted successfully');
+        res.status(200).json({ message: 'Data inserted successfully' });
+
+    } catch (error) {
+        console.error('Error inserting data:', error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+})
 app.post('/signup', (req, res) => {
     const { username, useremail, userpassword, confirm_password } = req.body;
 

@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './css/Home.css'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import picRound from './pictures/round.png'
 import { Link } from 'react-router-dom';
-import drug7 from './pictures/drug7.jpg'
-import drug8 from './pictures/drug8.png'
-import drug10 from './pictures/drug10.png'
-import drug11 from './pictures/drug11.png'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Carousel from './Carousel';
 import theme2 from './pictures/theme1.png'
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

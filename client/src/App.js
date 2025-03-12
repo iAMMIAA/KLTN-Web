@@ -1,21 +1,23 @@
-import { faPenNib, faCircle, faBars, faForward, faBackward, faHome, faCommentMedical, faBell, faSearch, faGear, faRightFromBracket} from '@fortawesome/free-solid-svg-icons';
+import { faCapsules, faPenNib, faCircle, faBars, faForward, faBackward, faHome, faCommentMedical, faBell, faSearch, faGear, faRightFromBracket} from '@fortawesome/free-solid-svg-icons';
 import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 import React, {useState, useEffect} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import picRound from './router/pictures/round.png';
 import username from './router/pictures/user.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import SignUp from './LogIn-SignUp/SignUp';
+import LogIn from './LogIn-SignUp/LogIn';
 import Setting_Profile from './router/Setting_Profile';
 import Exchange from './router/Exchange';
 import LookUp from './router/LookUp';
 import Home from './router/Home';
-import LogIn from './LogIn-SignUp/LogIn';
-import SignUp from './LogIn-SignUp/SignUp';
+import Detection from './router/Detection';
 import SeeNotification from './router/SeeNotification';
 import WritePaper from './router/WritePaper';
+import WriteInfoDrug from './router/WriteInfoDrug';
 import NoUser from './router/NoUser';
 import Paper from './router/paper/paper2';
-import logo from './logo/logo5.png'
+import logo from './logo/icon1.png'
 import Setting from './router/Setting';
 import axios from 'axios';
 import './css/App.css'; 
@@ -36,8 +38,10 @@ function App() {
   const [isOpenHome, setIsOpenHome] = useState(false);
   const [isOpenSetting, setIsOpenSetting] = useState(false);
   const [isOpenExchange, setIsOpenExchange] = useState(false);
+  const [isOpenDetection, setIsOpenDetection] = useState(false);
   const [isOpenLookUp, setIsOpenLookUp] = useState(false);
   const [isOpenWritePaper, setIsOpenWritePaper] = useState(false);
+  const [isOpenWriteInfoDrug, setIsOpenWriteInfoDrug] = useState(false);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);  
   const [noShowLogIn, setShowLogIn] = useState(false);
@@ -49,37 +53,65 @@ function App() {
   const openHome = () =>{
     setIsOpenHome(true);
     setIsOpenExchange(false);
+    setIsOpenDetection(false);
     setIsOpenLookUp(false);
     setIsOpenSetting(false);
     setIsOpenWritePaper(false);
+    setIsOpenWriteInfoDrug(false);
   }
   const openSetting= () =>{
     setIsOpenSetting(true);
     setIsOpenHome(false);
     setIsOpenExchange(false);
+    setIsOpenDetection(false);
     setIsOpenLookUp(false);
     setIsOpenWritePaper(false);
+    setIsOpenWriteInfoDrug(false);
   }
   const openExchange = () =>{
     setIsOpenExchange(true);
+    setIsOpenDetection(false);
     setIsOpenHome(false);
     setIsOpenLookUp(false);
     setIsOpenSetting(false);
     setIsOpenWritePaper(false);
+    setIsOpenWriteInfoDrug(false);
   }
   const openLookUp = () =>{
     setIsOpenLookUp(true);
     setIsOpenHome(false);
     setIsOpenExchange(false);
+    setIsOpenDetection(false);
     setIsOpenSetting(false);
     setIsOpenWritePaper(false);
+    setIsOpenWriteInfoDrug(false);
   }
   const openWritePaper = () =>{
     setIsOpenWritePaper(true);
     setIsOpenLookUp(false);
     setIsOpenHome(false);
     setIsOpenExchange(false);
+    setIsOpenDetection(false);
     setIsOpenSetting(false);
+    setIsOpenWriteInfoDrug(false);
+  }
+  const openDetection = () =>{
+    setIsOpenDetection(true);
+    setIsOpenWritePaper(false);
+    setIsOpenLookUp(false);
+    setIsOpenHome(false);
+    setIsOpenExchange(false);
+    setIsOpenSetting(false);
+    setIsOpenWriteInfoDrug(false);
+  }
+  const openWriteInfoDrug = () =>{
+    setIsOpenDetection(false);
+    setIsOpenWritePaper(false);
+    setIsOpenLookUp(false);
+    setIsOpenHome(false);
+    setIsOpenExchange(false);
+    setIsOpenSetting(false);
+    setIsOpenWriteInfoDrug(true);
   }
   const handleFixPositionScroll = () => {
     if (window.scrollY > 0) setFixPositionScroll(true);
@@ -110,6 +142,9 @@ function App() {
       case '/exchange':
         openExchange();
         break;
+      case '/detect':
+        openDetection();
+        break;
       case '/lookup':
         openLookUp();
         break;
@@ -118,6 +153,9 @@ function App() {
         break;
       case '/write_paper':
         openWritePaper();
+        break;
+      case '/write_info_drug':
+        openWriteInfoDrug();
         break;
       default:
         break;
@@ -184,7 +222,7 @@ function App() {
     localStorage.removeItem('token');
     localStorage.removeItem('idUser');
     // Tải lại trang
-    window.location.href = 'http://localhost:3000/';
+    window.location.href = 'http://localhost:3002/';
   }
   const see_notication = (id) => {
     axios.get(`http://localhost:3001/see_notication/${id}`)
@@ -245,13 +283,22 @@ function App() {
                       <FontAwesomeIcon icon={faHome} className='icon_left'/></Link></li>
                     <li><Link to='/exchange'  onClick={openExchange}>
                       <FontAwesomeIcon icon={faCommentMedical} className='icon_left'/></Link></li>
+                    <li><Link to='/detect'  onClick={openDetection}>
+                      <FontAwesomeIcon icon={faCapsules} className='icon_left'/></Link></li>
                     <li><Link to='/lookup'  onClick={openLookUp}>
                       <FontAwesomeIcon icon={faSearch} className='icon_left'/></Link></li>
                     <li><Link to='/setting_profile' onClick={openSetting}>
                       <FontAwesomeIcon icon={faGear} className='icon_left'/></Link></li>
+                      
                     {admin && (
-                      <li><Link to='/write_paper' onClick={openWritePaper}>
-                        <FontAwesomeIcon icon={faPenNib} className='icon_left'/></Link></li>
+                      <div className='admin'>
+                        <li><Link to='/write_paper' onClick={openWritePaper}>
+                          <FontAwesomeIcon icon={faPenNib} className='icon_left'/></Link>
+                        </li>
+                        <li><Link to='/write_info_drug' onClick={openWriteInfoDrug}>
+                          <FontAwesomeIcon icon={faPenNib} className='icon_left'/></Link>
+                        </li>
+                      </div>
                     )}  
                     
                   </ul>
@@ -265,7 +312,7 @@ function App() {
             <div className={`left_container ${isSidebarCollapsed ? 'active': ''} ${isOpenMenu ? 'open_by_bar':''}`}>
               <div className="header_menu">
                 <FontAwesomeIcon className={`icon_bars2 ${isOpenMenu ? 'open_by_bar':''}`} icon={faBars} onClick={openMenuByBar}/>
-                <span>MedicalWeb.</span>
+                <span>SM.DrugBank</span>
               </div>
               <div className="list_menu">
                   <ul>
@@ -275,16 +322,25 @@ function App() {
                     <li className={`itemMenu ${isOpenExchange ? 'active' : ''} ${darkMode ? 'dark_mode':''}`}>
                       <Link className='text_left' to='/exchange' onClick={openExchange}><span>DIỄN ĐÀN</span></Link>
                     </li>
+                    <li className={`itemMenu ${isOpenDetection? 'active' : ''} ${darkMode ? 'dark_mode':''}`}>
+                      <Link className='text_left' to='/detect' onClick={openDetection}><span>DETECTION</span></Link>
+                    </li>
                     <li className={`itemMenu ${isOpenLookUp ? 'active' : ''} ${darkMode ? 'dark_mode':''}`}>
                       <Link className='text_left' to='/lookup' onClick={openLookUp}><span>TRA CỨU</span></Link>
                     </li>
                     <li className={`itemMenu ${isOpenSetting ? 'active' : ''} ${darkMode ? 'dark_mode':''}` }>
                       <Link className='text_left' to='/setting_profile' onClick={openSetting}><span>CÀI ĐẶT</span></Link>
                     </li>
+                    
                     {admin && (
-                      <li className={`itemMenu ${isOpenWritePaper ? 'active' : ''} ${darkMode ? 'dark_mode':''}` }>
-                        <Link className='text_left' to='/write_paper' onClick={openWritePaper}><span>VIẾT BÀI</span></Link>
-                      </li>
+                      <div className='admin'>
+                        <li className={`itemMenu ${isOpenWritePaper ? 'active' : ''} ${darkMode ? 'dark_mode':''}` }>
+                          <Link className='text_left' to='/write_paper' onClick={openWritePaper}><span>VIẾT BÀI</span></Link>
+                        </li>
+                        <li className={`itemMenu ${isOpenWriteInfoDrug ? 'active' : ''} ${darkMode ? 'dark_mode':''}` }>
+                          <Link className='text_left' to='/write_info_drug' onClick={openWriteInfoDrug}><span>UPDATE DRUG</span></Link>
+                        </li>
+                      </div>
                     )} 
                   </ul>
               </div>
@@ -386,11 +442,13 @@ function App() {
                     <Routes>
                       <Route path="/" exact element={<Home isSidebarCollapsed={isSidebarCollapsed}/>}></Route>
                       <Route path='/exchange' element={<Exchange/>}></Route>
+                      <Route path='/detect' element={<Detection/>}></Route>
                       <Route path='/lookup' element={<LookUp/>}></Route>
                       <Route path='/paper2/:id' element={<Paper/>}></Route>
                       <Route path='/setting_profile/*' element={<Setting_Profile/>}></Route>
                       <Route path="/setting" element={<Setting/>} />
                       <Route path="/write_paper" element={<WritePaper/>} />
+                      <Route path="/write_info_drug" element={<WriteInfoDrug/>} />
                     </Routes>
                   ) : (
                     <Routes>
@@ -408,9 +466,9 @@ function App() {
                 <div className='footer_web_site'>
                   <div className='footer_header'>
                     <img src={logo}></img>
-                    <h2 style={{marginLeft: '10px'}}>MedicalWeb.</h2>
+                    <h2 style={{marginLeft: '10px'}}>.DrugBank</h2>
                   </div>
-                  <p><strong>Made by GroupFive</strong></p>
+                  <p><strong>Made by SUNSIK & IAMMIA</strong></p>
                 </div>
               </div>
           </div>
