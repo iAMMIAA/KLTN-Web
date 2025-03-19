@@ -22,17 +22,17 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(cors()); 
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    port: '3306',
-    user: 'root',
-    password: 'i.AMMIAK16',
-    database: 'DrugWeb'
+    host: '160.191.164.16',
+    port: '4306',
+    user: 'mia',
+    password: 'miamia',
+    database: 'drugweb'
 });
 
 const db_clickhouse = new createClient({
-    url: 'https://paf1p0lrtd.eastus2.azure.clickhouse.cloud:8443',
-    username: 'default',
-    password: 'MKKnDIrUP.dh3'
+    url: 'http://160.191.164.16:10123/',
+    // username: 'default',
+    // password: 'MKKnDIrUP.dh3'
 })
 
 // Kiểm tra kết nối
@@ -86,7 +86,7 @@ app.post('/signup', (req, res) => {
     const { username, useremail, userpassword, confirm_password } = req.body;
 
     // Kiểm tra xem username hoặc useremail có tồn tại hay không
-    const checkQuery = 'SELECT * FROM SignupLogIn WHERE username = ? OR useremail = ?';
+    const checkQuery = 'SELECT * FROM signuplogin WHERE username = ? OR useremail = ?';
     connection.query(checkQuery, [username, useremail], (checkErr, checkData) => {
         if (checkErr) {
             console.error('Error checking data in database: ' + checkErr.stack);
@@ -96,7 +96,7 @@ app.post('/signup', (req, res) => {
         if (checkData.length > 0) { // Nếu username hoặc useremail đã tồn tại
             return res.status(400).json({ message: 'Existed' });
         } else { // Nếu không tồn tại, tiếp tục chèn dữ liệu mới
-            const insertQuery = 'INSERT INTO SignupLogIn (username, useremail, userpassword, confirm_password) VALUES (?,?,?,?)';
+            const insertQuery = 'INSERT INTO signuplogin (username, useremail, userpassword, confirm_password) VALUES (?,?,?,?)';
             connection.query(insertQuery, [username, useremail, userpassword, confirm_password], (insertErr, insertData) => {
                 if (insertErr) {
                     console.error('Error inserting data into database: ' + insertErr.stack);
@@ -110,7 +110,7 @@ app.post('/signup', (req, res) => {
 });
 app.post('/login', (req, res) => {
     const { username, userpassword } = req.body;
-    const query = 'select * from SignupLogIn WHERE username=? AND userpassword=?';
+    const query = 'select * from signuplogin WHERE username=? AND userpassword=?';
     
     connection.query(query,[username,userpassword],(error,data) => {
         if (error) {
@@ -131,7 +131,7 @@ app.post('/login', (req, res) => {
 app.post('/write-paper', (req, res) =>{
     console.log('iammia', req.body);
     const { title, author, content, tag, cite_source } = req.body;
-    const query = 'insert into POSTS(title, author, cite_source, content, tag) values(?,?,?,?,?)';
+    const query = 'insert into posts(title, author, cite_source, content, tag) values(?,?,?,?,?)';
 
     connection.query(query, [title, author, cite_source, content, tag], (error, results) =>{
         if(error) {
@@ -282,7 +282,7 @@ app.get('/comments/count', checkAccess(), async (req, res) => {
 app.post('/update_profile/:idUser', (req, res) => {
     const data = req.body;
     const idUser = req.params.idUser;
-    const query = `update SignupLogIn set fullName = ?, school = ?, phonenumber = ?, career = ?, gender = ?, country = ?, city = ?, areaCode = ? where id = ?;`
+    const query = `update signuplogin set fullName = ?, school = ?, phonenumber = ?, career = ?, gender = ?, country = ?, city = ?, areaCode = ? where id = ?;`
     connection.query(query, [data.fullName, data.school, data.phoneNumber, data.career, data.gender, data.country, data.city, data.areaCode, idUser], (error, results) => {
         if(error) {
             console.error('Error inserting data: ', error);
@@ -303,7 +303,7 @@ app.post('/predict', upload.single('image'), (req, res) => {
         console.log(`Tên thuốc: ${data}`);
 
         const nameDrug = data.toString().trim();
-        const query = 'select * from InformationDrug where nameDrug = ?';
+        const query = 'select * from informationdrug where nameDrug = ?';
         connection.query(query, [nameDrug], (error, results) => {
             if(error) {
                 console.error(results);
@@ -326,8 +326,8 @@ app.post('/predict', upload.single('image'), (req, res) => {
 });
 app.get('/posts/:id', (req, res) => {
     const postID = req.params.id;
-    const query1 = 'update POSTS set number_of_viewer = number_of_viewer + 1 where id = ?';
-    const query2 = 'select * from POSTS where id = ?';
+    const query1 = 'update posts set number_of_viewer = number_of_viewer + 1 where id = ?';
+    const query2 = 'select * from posts where id = ?';
 
     connection.query(query1, [postID], (error, results) => {
         if(error) {
@@ -351,7 +351,7 @@ app.get('/notification/:idUser', (req, res) => {
     const readComment = `SELECT ec.*, u.username
                             FROM exchangecomments ec
                             JOIN exchanges e ON ec.exchangeId = e.id
-                            JOIN SignupLogIn u ON ec.userId = u.id
+                            JOIN signuplogin u ON ec.userId = u.id
                             WHERE ec.readComment = FALSE AND e.createdBy = ?;`;
     connection.query(readComment, [idUser], (error, results) => {
         if(error) {
@@ -365,8 +365,8 @@ app.get('/see_notication/:idComment', (req, res) => {
     const readComment = `SELECT u1.username as createrContent, ex.content, ec.contentComment, ec.userId as idUserComment, u.username as userComment, ec.createdAt, ec.id as idComment
                          FROM exchanges ex
                          JOIN exchangecomments ec ON ex.id = ec.exchangeId
-                         JOIN SignupLogIn u ON ec.userId = u.id
-                         JOIN SignupLogIn u1 ON ex.createdBy = u1.id
+                         JOIN signuplogin u ON ec.userId = u.id
+                         JOIN signuplogin u1 ON ex.createdBy = u1.id
                          WHERE ec.exchangeId = (
                              SELECT exchangeId
                              FROM exchangecomments
@@ -389,7 +389,7 @@ app.get('/see_notication/:idComment', (req, res) => {
     });
 });
 app.get('/posts', (req, res) => {
-    const query = `select * from POSTS`;
+    const query = `select * from posts`;
 
     connection.query(query, (error, result) => {
         if(error) {
@@ -406,11 +406,11 @@ app.get('/posts', (req, res) => {
 app.get('/related_post/:tag', (req, res) => {
     const tagPost = req.params.tag;
     console.log(tagPost);
-    const query = `select POSTS.title, POSTS.id, POSTS.author, POSTS.url_img, POSTS.date_update
-                    from POSTS 
-                    join TAGS 
-                    on TAGS.tags = POSTS.tag 
-                    where TAGS.tags = ?`;
+    const query = `select posts.title, posts.id, posts.author, posts.url_img, posts.date_update
+                    from posts 
+                    join tags 
+                    on tags.tags = tags.tag 
+                    where tags.tags = ?`;
     connection.query(query, [tagPost], (error, results) => {
         if(error) {
             console.error('loi');
@@ -423,9 +423,9 @@ app.get('/related_post/:tag', (req, res) => {
 app.get('/related_drug/:tag', (req, res) => {
     const tagPost = req.params.tag;
     console.log(tagPost);
-    const query = `select POSTS.title, POSTS.id
-                    from POSTS 
-                    where POSTS.tag = ?`;
+    const query = `select posts.title, posts.id
+                    from posts 
+                    where posts.tag = ?`;
     connection.query(query, [tagPost], (error, results) => {
         if(error) {
             console.error('loi');
@@ -436,7 +436,7 @@ app.get('/related_drug/:tag', (req, res) => {
     })
 });
 app.get('/arrange_view', (req, res) => {
-    const query = `select * from POSTS 
+    const query = `select * from posts 
                     order by number_of_viewer desc`;
     connection.query(query, (error, results) => {
         if(error) {
@@ -448,12 +448,12 @@ app.get('/arrange_view', (req, res) => {
     })
 });
 app.get('/top_posts', (req, res) => {
-    const query = `SELECT * FROM POSTS
+    const query = `SELECT * FROM posts
                     ORDER BY number_of_viewer DESC
                     LIMIT 4;`;
     connection.query(query, (error, results) => {
         if(error) {
-            console.error('loi');
+            console.error('loi:', error);
             res.status(500).json({error: 'loi cmnr'});
         } else {
             res.status(200).json(results);
@@ -462,7 +462,7 @@ app.get('/top_posts', (req, res) => {
 });
 app.get('/arrange_dateupdate', (req, res) => {
     const query = `select *
-                    from POSTS 
+                    from posts 
                     order by date_update desc`;
     connection.query(query, (error, results) => {
         if(error) {
@@ -475,7 +475,7 @@ app.get('/arrange_dateupdate', (req, res) => {
 });
 app.get('/user/:idUser', (req, res) => {
     const idUser = req.params.idUser;
-    const query = `select * from SignupLogIn where id=?`
+    const query = `select * from signuplogin where id=?`
     
     connection.query(query, [idUser], (error, results) => {
         if(error) res.status(500).json({error: 'Error to get infor'});
@@ -484,7 +484,7 @@ app.get('/user/:idUser', (req, res) => {
 })
 app.delete('/deleteAccount', (req, res) => {
     const userEmail = req.body.useremail;
-    const sql = 'DELETE FROM SignupLogIn WHERE useremail = ?';
+    const sql = 'DELETE FROM signuplogin WHERE useremail = ?';
   
     connection.query(sql, [userEmail], (err, result) => {
       if (err) {

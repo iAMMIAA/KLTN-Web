@@ -23,11 +23,6 @@ function Detection() {
       try {
         const data = JSON.parse(event.data);
 
-        // Kiểm tra xem frame_detected có thay đổi không
-        // if (data.frame_detected !== currentFrameDetected) {
-        //   setCurrentFrameDetected(data.frame_detected); // Cập nhật frame_detected hiện tại
-        //   setDrugInfo([]); // Làm mới drugInfo
-        // }
 
         if (data.name !== undefined && data.count !== undefined && data.image_bounding_box !== undefined) {
           // setDrugInfo((prevData) => [...prevData, data]); 
