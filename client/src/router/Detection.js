@@ -1,5 +1,5 @@
 import "./css/Detection.css";
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useDarkMode } from "./DarkModeContext";
 import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
@@ -9,7 +9,8 @@ function Detection() {
     const [drugInfo, setDrugInfo] = useState([]);
     const [imageLink, setImageLink] = useState(null);
     const [detailDrugInfo, setDetailDrugInfo] = useState(null);
-    const [currentFrameDetected, setCurrentFrameDetected] = useState(null);
+    // const [currentFrameDetected, setCurrentFrameDetected] = useState(null);
+    const currentFrameRef = useRef(null); // Dùng useRef để lưu giá trị trước đó
 
     useEffect(() => {
         const socket = new WebSocket(
@@ -24,47 +25,47 @@ function Detection() {
         // Khi nhận được dữ liệu từ Python
         socket.onmessage = (event) => {
             try {
-                const data = JSON.parse(event.data);
-
-                if (
-                    data.name !== undefined &&
-                    data.count !== undefined &&
-                    data.image_bounding_box !== undefined
-                ) {
-                    // setDrugInfo((prevData) => [...prevData, data]);
-                    setDrugInfo((prevData) => {
-                        // Tìm xem đã có drug với tên này chưa
-                        const existingDrugIndex = prevData.findIndex(
-                            (drug) => drug.name === data.name,
-                        );
-                        if (existingDrugIndex !== -1) {
-                            // Nếu đã tồn tại, thêm image_bounding_box vào mảng bounding_boxes
-                            const updatedDrug = {
-                                ...prevData[existingDrugIndex],
-                                count: prevData[existingDrugIndex].count,
-                                bounding_boxes: [
-                                    ...prevData[existingDrugIndex]
-                                        .bounding_boxes,
-                                    data.image_bounding_box,
-                                ],
-                            };
-                            const newData = [...prevData];
-                            newData[existingDrugIndex] = updatedDrug;
-                            return newData;
-                        } else {
-                            // Nếu chưa tồn tại, thêm drug mới vào mảng
-                            return [
-                                ...prevData,
-                                {
-                                    name: data.name,
-                                    count: data.count,
-                                    bounding_boxes: [data.image_bounding_box],
-                                },
-                            ];
-                        }
-                    });
-                }
-                setImageLink(`data:image/jpeg;base64,${data.image}`); // Hiển thị hình ảnh từ base64
+              const data = JSON.parse(event.data);
+              // console.log("Dữ liệu nhận được:", data.frame);
+              
+              // Nếu frame_detected thay đổi, cập nhật currentFrame để reload component
+              if (data.frame !== undefined && data.frame !== currentFrameRef.current) {
+                // setCurrentFrame(data.frame);
+                currentFrameRef.current = data.frame;
+                // console.log("setCurrentFrame:", data.frame);
+                // console.log("CurrentFrame:", currentFrameRef.current);
+                setDrugInfo([]); // Reset drugInfo về rỗng
+                setImageLink(null); // Reset imageLink về null
+              } 
+              
+              if (data.name !== undefined && data.count !== undefined && data.image_bounding_box !== undefined) {
+                
+                setDrugInfo((prevData) => {
+                  const existingDrugIndex = prevData.findIndex(drug => drug.name === data.name);
+                  if (existingDrugIndex !== -1) {
+                    const updatedDrug = {
+                      ...prevData[existingDrugIndex],
+                      count: data.count,
+                      bounding_boxes: [...prevData[existingDrugIndex].bounding_boxes, data.image_bounding_box]
+                    };
+                    const newData = [...prevData];
+                    newData[existingDrugIndex] = updatedDrug;
+                    return newData;
+                  } else {
+                    return [...prevData, {
+                      name: data.name,
+                      count: data.count,
+                      bounding_boxes: [data.image_bounding_box]
+                    }];
+                  }
+                });
+              }
+      
+              // Cập nhật hình ảnh chính
+              if (data.image) {
+                setImageLink(`data:image/jpeg;base64,${data.image}`);
+              }
+      
             } catch (error) {
                 console.error("Error parsing JSON:", error);
             }
