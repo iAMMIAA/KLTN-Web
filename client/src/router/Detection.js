@@ -73,7 +73,7 @@ function Detection() {
   },[])
 
   const get_detail_drug_info = (nameDrug) =>{
-    axios.get(`http://localhost:3001/clickhouse/${nameDrug}`)
+    axios.get(`http://localhost:3001/get-name-drug/${nameDrug}`)
         .then(response => {
             if (response.data && response.data.length > 0) {
               setDetailDrugInfo(response.data[0]);
