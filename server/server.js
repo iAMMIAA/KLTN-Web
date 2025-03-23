@@ -29,59 +29,93 @@ const connection = mysql.createConnection({
     database: 'drugweb'
 });
 
-const db_clickhouse = new createClient({
-    url: 'http://160.191.164.16:10123/',
-    // username: 'default',
-    // password: 'MKKnDIrUP.dh3'
-})
+// const db_clickhouse = new createClient({
+//     url: 'http://160.191.164.16:10123/',
+//     username: 'mia',
+//     password: 'miamia'
+// })
 
 // Kiểm tra kết nối
-async function testConnection() {
-    try {
-        const result = await db_clickhouse.ping();
-        console.log('Kết nối ClickHouse thành công:', result);
-    } catch (error) {
-        console.error('Lỗi kết nối ClickHouse:', error);
-    }
-}
+// async function testConnection() {
+//     try {
+//         const result = await db_clickhouse.ping();
+//         console.log('Kết nối ClickHouse thành công:', result);
+//     } catch (error) {
+//         console.error('Lỗi kết nối ClickHouse:', error);
+//     }
+// }
   
-testConnection();
+// testConnection();
 
-app.get('/clickhouse/:nameDrug', async (req, res) => {
+// app.get('/clickhouse/:nameDrug', async (req, res) => {
+//     const nameDrug = req.params.nameDrug;
+//     const query = `SELECT * FROM drug_database WHERE name = {nameDrug:String}`;
+//     try {
+//         const result = await db_clickhouse.query({
+//             query: query,
+//             format: 'JSONEachRow',
+//             query_params: {nameDrug}
+//         });
+//         const rows = await result.json();
+//         console.log('result:', rows);      
+//         res.status(200).json(rows);
+//     } catch (error) {
+//         console.error('Error querying ClickHouse:', error);
+//         res.status(500).json({ error: 'Internal server error.' });
+//     }
+// });
+app.get('/get-name-drug/:nameDrug', async (req, res) => {
     const nameDrug = req.params.nameDrug;
-    const query = `SELECT * FROM drug_database WHERE name = {nameDrug:String}`;
+    const query = `SELECT * FROM informationdrug_detect WHERE name_drug = ?`;
+
     try {
-        const result = await db_clickhouse.query({
-            query: query,
-            format: 'JSONEachRow',
-            query_params: {nameDrug}
-        });
-        const rows = await result.json();
-        console.log('result:', rows);      
+        const [rows] = await connection.execute(query, [nameDrug]);
+        console.log('result:', rows);
         res.status(200).json(rows);
     } catch (error) {
-        console.error('Error querying ClickHouse:', error);
+        console.error('Error querying MySQL:', error);
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
-app.post('/write-info-drug', async (req, res) =>{
+
+// app.post('/write-info-drug', async (req, res) =>{
+//     const { id_drug, uses, excipients, side_effects, name } = req.body;
+
+//     try {
+//         await db_clickhouse.insert({
+//             table: 'drug_database',
+//             values: [{ id_drug, uses, excipients, side_effects, name }],
+//             format: 'JSONEachRow' // ClickHouse yêu cầu định dạng JSON khi insert
+//         });
+
+//         console.log('Data inserted successfully');
+//         res.status(200).json({ message: 'Data inserted successfully' });
+
+//     } catch (error) {
+//         console.error('Error inserting data:', error);
+//         res.status(500).json({ error: 'Internal server error.' });
+//     }
+// })
+app.post('/write-info-drug', async (req, res) => {
     const { id_drug, uses, excipients, side_effects, name } = req.body;
 
-    try {
-        await db_clickhouse.insert({
-            table: 'drug_database',
-            values: [{ id_drug, uses, excipients, side_effects, name }],
-            format: 'JSONEachRow' // ClickHouse yêu cầu định dạng JSON khi insert
-        });
+    const query = `
+        INSERT INTO informationdrug_detect (id_drug, uses, excipients, side_effects, name_drug)
+        VALUES (?, ?, ?, ?, ?)
+    `;
 
-        console.log('Data inserted successfully');
+    try {
+        const [result] = await connection.execute(query, [id_drug, uses, excipients, side_effects, name]);
+        
+        console.log('Data inserted successfully:', result);
         res.status(200).json({ message: 'Data inserted successfully' });
 
     } catch (error) {
         console.error('Error inserting data:', error);
         res.status(500).json({ error: 'Internal server error.' });
     }
-})
+});
+
 app.post('/signup', (req, res) => {
     const { username, useremail, userpassword, confirm_password } = req.body;
 
