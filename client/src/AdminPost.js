@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
 function Paper() {
     const [title, setTitle] = useState('');
@@ -19,7 +20,7 @@ function Paper() {
         };
 
         // Gửi dữ liệu lên server sử dụng phương thức POST
-        axios.post('http://localhost:3001/posts', postData)
+        axios.post(`${API_URL/posts`, postData)
             .then(response => {
                 console.log('Data sent successfully:', response.data);
                 // Xử lý phản hồi từ server nếu cần
