@@ -28,7 +28,9 @@
     color: #ccc;
     background-color: #333333;
 }
-
+.newfeed{
+    min-height: 390px;
+}
 .exchange_title{
     height: 5%;
     margin-top: 25px;
