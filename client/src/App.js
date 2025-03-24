@@ -24,6 +24,8 @@ import './css/App.css';
 import {Avatar} from "@mui/material";
 import { useDarkMode } from './router/DarkModeContext';
 
+const BASE_URL = process.env.URL_CONNECT_SERVER;
+
 function App() {
   const { darkMode } = useDarkMode(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -50,112 +52,52 @@ function App() {
   const [dataSeeNotification, setDataSeeNotification] = useState([]);
   const [idCmt, setIdCmt] = useState('');
 
-  const openHome = () =>{
-    setIsOpenHome(true);
-    setIsOpenExchange(false);
-    setIsOpenDetection(false);
-    setIsOpenLookUp(false);
-    setIsOpenSetting(false);
-    setIsOpenWritePaper(false);
-    setIsOpenWriteInfoDrug(false);
-  }
-  const openSetting= () =>{
-    setIsOpenSetting(true);
-    setIsOpenHome(false);
-    setIsOpenExchange(false);
-    setIsOpenDetection(false);
-    setIsOpenLookUp(false);
-    setIsOpenWritePaper(false);
-    setIsOpenWriteInfoDrug(false);
-  }
-  const openExchange = () =>{
-    setIsOpenExchange(true);
-    setIsOpenDetection(false);
-    setIsOpenHome(false);
-    setIsOpenLookUp(false);
-    setIsOpenSetting(false);
-    setIsOpenWritePaper(false);
-    setIsOpenWriteInfoDrug(false);
-  }
-  const openLookUp = () =>{
-    setIsOpenLookUp(true);
-    setIsOpenHome(false);
-    setIsOpenExchange(false);
-    setIsOpenDetection(false);
-    setIsOpenSetting(false);
-    setIsOpenWritePaper(false);
-    setIsOpenWriteInfoDrug(false);
-  }
-  const openWritePaper = () =>{
-    setIsOpenWritePaper(true);
-    setIsOpenLookUp(false);
-    setIsOpenHome(false);
-    setIsOpenExchange(false);
-    setIsOpenDetection(false);
-    setIsOpenSetting(false);
-    setIsOpenWriteInfoDrug(false);
-  }
-  const openDetection = () =>{
-    setIsOpenDetection(true);
-    setIsOpenWritePaper(false);
-    setIsOpenLookUp(false);
-    setIsOpenHome(false);
-    setIsOpenExchange(false);
-    setIsOpenSetting(false);
-    setIsOpenWriteInfoDrug(false);
-  }
-  const openWriteInfoDrug = () =>{
-    setIsOpenDetection(false);
-    setIsOpenWritePaper(false);
-    setIsOpenLookUp(false);
-    setIsOpenHome(false);
-    setIsOpenExchange(false);
-    setIsOpenSetting(false);
-    setIsOpenWriteInfoDrug(true);
-  }
+  const openSection = (section) => {
+    setIsOpenHome(section === 'home');
+    setIsOpenExchange(section === 'exchange');
+    setIsOpenDetection(section === 'detection');
+    setIsOpenLookUp(section === 'lookup');
+    setIsOpenSetting(section === 'setting');
+    setIsOpenWritePaper(section === 'writePaper');
+    setIsOpenWriteInfoDrug(section === 'writeInfoDrug');
+  };
+
   const handleFixPositionScroll = () => {
-    if (window.scrollY > 0) setFixPositionScroll(true);
-    else setFixPositionScroll(false);
-  }
-  const openNotification = () => {
-    if (isOpenNotification == true) setIsOpenNotification(false);
-    else setIsOpenNotification(true);
-  }
-  const openDropDown = () =>{
-    if (isOpenDropDown == true) setIsOpenDropDown(false);
-    else setIsOpenDropDown(true);
-  }
-  const openLeftIconMove = () => {
-    if (isSidebarCollapsed == true) setIsSidebarCollapsed(false);
-    else setIsSidebarCollapsed(true);
-  }
-  const openMenuByBar = () =>{
-    if (isOpenMenu == false) setIsOpenMenu(true);
-    else setIsOpenMenu(false);
-  }
+    setFixPositionScroll(window.scrollY > 0);
+  };
+
+  const toggleState = (stateSetter, currentState) => {
+    stateSetter(!currentState);
+  };
+
+  const openNotification = () => toggleState(setIsOpenNotification, isOpenNotification);
+  const openDropDown = () => toggleState(setIsOpenDropDown, isOpenDropDown);
+  const openLeftIconMove = () => toggleState(setIsSidebarCollapsed, isSidebarCollapsed);
+  const openMenuByBar = () => toggleState(setIsOpenMenu, isOpenMenu);
+
   useEffect(() => {
     const pathname = window.location.pathname;
     switch (pathname) {
       case '/':
-        openHome();
+        openSection('home');
         break;
       case '/exchange':
-        openExchange();
+        openSection('exchange');
         break;
       case '/detect':
-        openDetection();
+        openSection('detection');
         break;
       case '/lookup':
-        openLookUp();
+        openSection('lookup');
         break;
       case '/setting_profile':
-        openSetting();
+        openSection('setting');
         break;
       case '/write_paper':
-        openWritePaper();
+        openSection('writePaper');
         break;
       case '/write_info_drug':
-        openWriteInfoDrug();
+        openSection('writeInfoDrug');
         break;
       default:
         break;
@@ -163,12 +105,11 @@ function App() {
 
     window.addEventListener('scroll', handleFixPositionScroll);
 
-    // Xóa sự kiện
     return () => {
       window.removeEventListener('scroll', handleFixPositionScroll);
     };
-
   }, []);
+
   const setShowLogInForm = () => {
     setShowLogIn(true);
     setShowSignUp(false);
@@ -179,7 +120,7 @@ function App() {
   }
   const logIn = async (formData) => {
     try {
-        const response = await axios.post('http://localhost:3001/login', formData);
+        const response = await axios.post(`${BASE_URL}/login`, formData);
         const { message, token, idUser, adminUser } = response.data;
 
         if (message === 'Success' && token) {
@@ -201,7 +142,7 @@ function App() {
   };
   const requestSignUp = async (formSignUp) => {
     try{
-        const response = await axios.post('http://localhost:3001/signup', formSignUp)
+        const response = await axios.post(`${BASE_URL}/signup`, formSignUp)
         const { message } = response.data;
         
         if(message === 'Success') {
@@ -222,10 +163,10 @@ function App() {
     localStorage.removeItem('token');
     localStorage.removeItem('idUser');
     // Tải lại trang
-    window.location.href = 'http://localhost:3002/';
+    window.location.href = 'http://localhost:3000/';
   }
   const see_notication = (id) => {
-    axios.get(`http://localhost:3001/see_notication/${id}`)
+    axios.get(`${BASE_URL}/see_notication/${id}`)
         .then(response => {
           const data = response.data;
           setDataSeeNotification(data);
@@ -240,7 +181,7 @@ function App() {
     if (loggedInStatus === 'true') {
       setIsLoggedIn(true);
 
-      axios.get(`http://localhost:3001/user/${localStorage.getItem('idUser')}`)
+      axios.get(`${BASE_URL}/user/${localStorage.getItem('idUser')}`)
       .then(response => {
         const infoUser = response.data;
         setUserName(infoUser.username);
@@ -249,7 +190,7 @@ function App() {
       })
       .catch(error => {console.error('error: ', error);})
 
-      axios.get(`http://localhost:3001/notification/${localStorage.getItem('idUser')}`)
+      axios.get(`${BASE_URL}/notification/${localStorage.getItem('idUser')}`)
       .then(response => {
         const notif = response.data;
         if(notif.length > 0) {
@@ -279,23 +220,23 @@ function App() {
               </div>
               <div className="list_menu">
                   <ul>
-                    <li><Link to='/' onClick={openHome}>
+                    <li><Link to='/' onClick={() => openSection('home')}>
                       <FontAwesomeIcon icon={faHome} className='icon_left'/></Link></li>
-                    <li><Link to='/exchange'  onClick={openExchange}>
+                    <li><Link to='/exchange' onClick={() => openSection('exchange')}>
                       <FontAwesomeIcon icon={faCommentMedical} className='icon_left'/></Link></li>
-                    <li><Link to='/detect'  onClick={openDetection}>
+                    <li><Link to='/detect' onClick={() => openSection('detection')}>
                       <FontAwesomeIcon icon={faCapsules} className='icon_left'/></Link></li>
-                    <li><Link to='/lookup'  onClick={openLookUp}>
+                    <li><Link to='/lookup' onClick={() => openSection('lookup')}>
                       <FontAwesomeIcon icon={faSearch} className='icon_left'/></Link></li>
-                    <li><Link to='/setting_profile' onClick={openSetting}>
+                    <li><Link to='/setting_profile' onClick={() => openSection('setting')}>
                       <FontAwesomeIcon icon={faGear} className='icon_left'/></Link></li>
                       
                     {admin && (
                       <div className='admin'>
-                        <li><Link to='/write_paper' onClick={openWritePaper}>
+                        <li><Link to='/write_paper' onClick={() => openSection('writePaper')}>
                           <FontAwesomeIcon icon={faPenNib} className='icon_left'/></Link>
                         </li>
-                        <li><Link to='/write_info_drug' onClick={openWriteInfoDrug}>
+                        <li><Link to='/write_info_drug' onClick={() => openSection('writeInfoDrug')}>
                           <FontAwesomeIcon icon={faPenNib} className='icon_left'/></Link>
                         </li>
                       </div>
@@ -317,28 +258,28 @@ function App() {
               <div className="list_menu">
                   <ul>
                     <li className={`itemMenu ${isOpenHome ? 'active' : ''} ${darkMode ? 'dark_mode':''}`}>
-                      <Link className='text_left' to='/' onClick={openHome}><span>TRANG CHỦ</span></Link>
+                      <Link className='text_left' to='/' onClick={() => openSection('home')}><span>TRANG CHỦ</span></Link>
                     </li>
                     <li className={`itemMenu ${isOpenExchange ? 'active' : ''} ${darkMode ? 'dark_mode':''}`}>
-                      <Link className='text_left' to='/exchange' onClick={openExchange}><span>DIỄN ĐÀN</span></Link>
+                      <Link className='text_left' to='/exchange' onClick={() => openSection('exchange')}><span>DIỄN ĐÀN</span></Link>
                     </li>
                     <li className={`itemMenu ${isOpenDetection? 'active' : ''} ${darkMode ? 'dark_mode':''}`}>
-                      <Link className='text_left' to='/detect' onClick={openDetection}><span>DETECTION</span></Link>
+                      <Link className='text_left' to='/detect' onClick={() => openSection('detection')}><span>DETECTION</span></Link>
                     </li>
                     <li className={`itemMenu ${isOpenLookUp ? 'active' : ''} ${darkMode ? 'dark_mode':''}`}>
-                      <Link className='text_left' to='/lookup' onClick={openLookUp}><span>TRA CỨU</span></Link>
+                      <Link className='text_left' to='/lookup' onClick={() => openSection('lookup')}><span>TRA CỨU</span></Link>
                     </li>
                     <li className={`itemMenu ${isOpenSetting ? 'active' : ''} ${darkMode ? 'dark_mode':''}` }>
-                      <Link className='text_left' to='/setting_profile' onClick={openSetting}><span>CÀI ĐẶT</span></Link>
+                      <Link className='text_left' to='/setting_profile' onClick={() => openSection('setting')}><span>CÀI ĐẶT</span></Link>
                     </li>
                     
                     {admin && (
                       <div className='admin'>
                         <li className={`itemMenu ${isOpenWritePaper ? 'active' : ''} ${darkMode ? 'dark_mode':''}` }>
-                          <Link className='text_left' to='/write_paper' onClick={openWritePaper}><span>VIẾT BÀI</span></Link>
+                          <Link className='text_left' to='/write_paper' onClick={() => openSection('writePaper')}><span>VIẾT BÀI</span></Link>
                         </li>
                         <li className={`itemMenu ${isOpenWriteInfoDrug ? 'active' : ''} ${darkMode ? 'dark_mode':''}` }>
-                          <Link className='text_left' to='/write_info_drug' onClick={openWriteInfoDrug}><span>UPDATE DRUG</span></Link>
+                          <Link className='text_left' to='/write_info_drug' onClick={() => openSection('writeInfoDrug')}><span>UPDATE DRUG</span></Link>
                         </li>
                       </div>
                     )} 
@@ -383,7 +324,7 @@ function App() {
                                   <p className={`notif_userName_2 ${darkMode ? 'dark_mode':''}`}>Không có thông báo!</p>
                                 </div>
                               </div>
-                            ):(
+                            ):( 
                               listNotif.map(post => (
                                 <div className='notif_one_user' key={post.id} onClick={() => see_notication(post.id)}>
                                   <img src={picRound}></img>

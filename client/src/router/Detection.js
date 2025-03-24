@@ -8,8 +8,7 @@ function Detection() {
   const [drugInfo, setDrugInfo] = useState([]);
   const [imageLink, setImageLink] = useState(null);
   const [detailDrugInfo, setDetailDrugInfo] = useState(null);
-  // const [currentFrame, setCurrentFrame] = useState(null); // Theo dõi frame hiện tại để làm key
-  const currentFrameRef = useRef(null); // Dùng useRef để lưu giá trị trước đó
+  const currentFrameRef = useRef(null);
 
   useEffect(() => {
     const socket = new WebSocket("ws://jetson-xavier-nx.tailnet-8188.ts.net:8765");
@@ -19,51 +18,7 @@ function Detection() {
     };
 
     socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log("Dữ liệu nhận được:", data.frame);
-        
-        // Nếu frame_detected thay đổi, cập nhật currentFrame để reload component
-        if (data.frame !== undefined && data.frame !== currentFrameRef.current) {
-          // setCurrentFrame(data.frame);
-          currentFrameRef.current = data.frame;
-          console.log("setCurrentFrame:", data.frame);
-          console.log("CurrentFrame:", currentFrameRef.current);
-          setDrugInfo([]); // Reset drugInfo về rỗng
-          setImageLink(null); // Reset imageLink về null
-        } 
-        
-        if (data.name !== undefined && data.count !== undefined && data.image_bounding_box !== undefined) {
-          
-          setDrugInfo((prevData) => {
-            const existingDrugIndex = prevData.findIndex(drug => drug.name === data.name);
-            if (existingDrugIndex !== -1) {
-              const updatedDrug = {
-                ...prevData[existingDrugIndex],
-                count: data.count,
-                bounding_boxes: [...prevData[existingDrugIndex].bounding_boxes, data.image_bounding_box]
-              };
-              const newData = [...prevData];
-              newData[existingDrugIndex] = updatedDrug;
-              return newData;
-            } else {
-              return [...prevData, {
-                name: data.name,
-                count: data.count,
-                bounding_boxes: [data.image_bounding_box]
-              }];
-            }
-          });
-        }
-
-        // Cập nhật hình ảnh chính
-        if (data.image) {
-          setImageLink(`data:image/jpeg;base64,${data.image}`);
-        }
-
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-      }
+      handleSocketMessage(event);
     };
 
     window.scrollTo(0, 0);
@@ -79,9 +34,61 @@ function Detection() {
     return () => {
       socket.close();
     };
-  }, []); // Dependency array rỗng để effect chỉ chạy một lần khi mount
+  }, []);
 
-  const get_detail_drug_info = (nameDrug) => {
+  const handleSocketMessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      console.log("Dữ liệu nhận được:", data.frame);
+
+      if (data.frame !== undefined && data.frame !== currentFrameRef.current) {
+        currentFrameRef.current = data.frame;
+        console.log("setCurrentFrame:", data.frame);
+        console.log("CurrentFrame:", currentFrameRef.current);
+        resetDrugInfo();
+      }
+
+      if (data.name !== undefined && data.count !== undefined && data.image_bounding_box !== undefined) {
+        updateDrugInfo(data);
+      }
+
+      if (data.image) {
+        setImageLink(`data:image/jpeg;base64,${data.image}`);
+      }
+
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+    }
+  };
+
+  const resetDrugInfo = () => {
+    setDrugInfo([]);
+    setImageLink(null);
+  };
+
+  const updateDrugInfo = (data) => {
+    setDrugInfo((prevData) => {
+      const existingDrugIndex = prevData.findIndex(drug => drug.name === data.name);
+      if (existingDrugIndex !== -1) {
+        const updatedDrug = {
+          ...prevData[existingDrugIndex],
+          count: data.count,
+          bounding_boxes: [...prevData[existingDrugIndex].bounding_boxes, data.image_bounding_box]
+        };
+        const newData = [...prevData];
+        newData[existingDrugIndex] = updatedDrug;
+        return newData;
+      } else {
+        return [...prevData, {
+          name: data.name,
+          count: data.count,
+          bounding_boxes: [data.image_bounding_box]
+        }];
+      }
+    });
+  };
+
+  const getDetailDrugInfo = (nameDrug) => {
     axios.get(`http://localhost:3001/get-name-drug/${nameDrug}`)
       .then(response => {
         if (response.data && response.data.length > 0) {
@@ -100,11 +107,10 @@ function Detection() {
       <div className={`detection_container`}>
         <div className="d_result" style={{ maxHeight: '400px', overflowY: 'auto' }}>
           {drugInfo.length > 0 ? (
-            // Sử dụng key dựa trên currentFrame để reload main_result khi frame thay đổi
             <div className='main_result'>
               {drugInfo.map((drug, index) => (
                 <div key={index} className='drug_item'>
-                  <div className='basic_drug_info' onClick={() => get_detail_drug_info(drug.name)}>
+                  <div className='basic_drug_info' onClick={() => getDetailDrugInfo(drug.name)}>
                     <div className='drug_bounding_box'>
                       {drug.bounding_boxes.map((boundingBox, idx) => (
                         <div key={idx} className='drug_bounding_box'>

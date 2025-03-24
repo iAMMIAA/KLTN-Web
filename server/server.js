@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -14,19 +15,19 @@ const { User } = require('./src/models/user.model');
 const { createClient } = require('@clickhouse/client');
 
 const app = express();
-const port = 3001;
-const jwtSecretKey = 'medicalweb';
+const port = process.env.PORT || 3001;
+const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(cors()); 
 
 const connection = mysql.createConnection({
-    host: '160.191.164.16',
-    port: '4306',
-    user: 'mia',
-    password: 'miamia',
-    database: 'drugweb'
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 // const db_clickhouse = new createClient({
@@ -44,8 +45,6 @@ const connection = mysql.createConnection({
 //         console.error('Lỗi kết nối ClickHouse:', error);
 //     }
 // }
-  
-// testConnection();
 
 // app.get('/clickhouse/:nameDrug', async (req, res) => {
 //     const nameDrug = req.params.nameDrug;
@@ -443,7 +442,7 @@ app.get('/related_post/:tag', (req, res) => {
     const query = `select posts.title, posts.id, posts.author, posts.url_img, posts.date_update
                     from posts 
                     join tags 
-                    on tags.tags = tags.tag 
+                    on tags.tags = tags.tags 
                     where tags.tags = ?`;
     connection.query(query, [tagPost], (error, results) => {
         if(error) {
